@@ -1,10 +1,11 @@
-package ui;
+package ui.panels;
 
 import model.Purchaser;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PurchaserPanel extends JPanel {
 
@@ -19,87 +20,118 @@ public class PurchaserPanel extends JPanel {
     private JTextField creditCardNoField;
     private JTextField validationIdField;
 
+    private Purchaser purchaser;
+
     // Constructors
     public PurchaserPanel() {
-        setLayout(new BorderLayout());
-        setBorder(new TitledBorder("Purchaser"));
+        purchaser = new Purchaser();
 
-        JPanel form = new JPanel(new GridLayout(6, 2, 8, 8));
+        setBorder(BorderFactory.createTitledBorder("Purchaser"));
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        nameField = new JTextField();
-        phoneField = new JTextField();
-        postalCodeField = new JTextField();
-        provinceField = new JTextField();
-        cityField = new JTextField();
-        deliveryAddressField = new JTextField();
-        todaysDateField = new JTextField();
-        creditCardNoField = new JTextField();
-        validationIdField = new JTextField();
+        gbc.insets = new Insets(4, 4, 4, 4);
+
+        int y = 0;
 
         // Row 1
-        form.add(new JLabel("Name:"));
-        form.add(nameField);
-
-        form.add(new JLabel("Phone:"));
-        form.add(phoneField);
+        addLabel("Name:", 0, y, 1, gbc);
+        nameField = addField(1, y, 1, gbc);
+        addLabel("Phone:", 2, y, 1, gbc);
+        phoneField = addField(3, y++, 1, gbc);
 
         // Row 2
-        form.add(new JLabel("Postal Code:"));
-        form.add(postalCodeField);
-
-        form.add(new JLabel("Province:"));
-        form.add(provinceField);
+        addLabel("Postal Code:", 0, y, 1, gbc);
+        postalCodeField = addField(1, y, 1, gbc);
+        addLabel("Province:", 2, y, 1, gbc);
+        provinceField = addField(3, y, 1, gbc);
+        addLabel("City:", 4, y, 1, gbc);
+        cityField = addField(5, y++, 1, gbc);
 
         // Row 3
-        form.add(new JLabel("City:"));
-        form.add(cityField);
-
-        // empty to fill 2nd column
-        form.add(new JLabel(""));
+        addLabel("Delivery Address:", 0, y, 1, gbc);
+        deliveryAddressField = addField(1, y++, 5, gbc); // spans full row
 
         // Row 4
-        form.add(new JLabel("Delivery Address:"));
-        form.add(deliveryAddressField);
+        addLabel("Today's Date:", 0, y, 1, gbc);
+        todaysDateField = addField(1, y++, 1, gbc);
 
         // Row 5
-        form.add(new JLabel("Today's Date:"));
-        form.add(todaysDateField);
-
-        form.add(new JLabel("Credit Card No:"));
-        form.add(creditCardNoField);
-
-        // Row 6
-        form.add(new JLabel("Validation ID:"));
-        form.add(validationIdField);
-
-        add(form, BorderLayout.CENTER);
+        addLabel("Credit Card No:", 0, y, 1, gbc);
+        creditCardNoField = addField(1, y, 1, gbc);
+        addLabel("For Dept. Use, Validation ID:", 2, y, 1, gbc);
+        validationIdField = addField(3, y++, 1, gbc);
     }
 
     // Other Methods
-    public Purchaser getPurchaserData() {
-        return new Purchaser(
-                nameField.getText().trim(),
-                phoneField.getText().trim(),
-                postalCodeField.getText().trim(),
-                provinceField.getText().trim(),
-                cityField.getText().trim(),
-                deliveryAddressField.getText().trim(),
-                todaysDateField.getText().trim(),
-                creditCardNoField.getText().trim(),
-                validationIdField.getText().trim()
-        );
+    private void addLabel(String text, int x, int y, int width, GridBagConstraints gbc) {
+        gbc.gridx = x;
+        gbc.gridy = y;
+        gbc.gridwidth = width;
+        gbc.weightx = 0.0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.fill = GridBagConstraints.NONE;
+        JLabel label = new JLabel(text, JLabel.RIGHT);
+        add(label, gbc);
     }
 
-    public void clearFields() {
-        nameField.setText("");
-        phoneField.setText("");
-        postalCodeField.setText("");
-        provinceField.setText("");
-        cityField.setText("");
-        deliveryAddressField.setText("");
-        todaysDateField.setText("");
-        creditCardNoField.setText("");
-        validationIdField.setText("");
+    private JTextField addField(int x, int y, int width, GridBagConstraints gbc) {
+        gbc.gridx = x;
+        gbc.gridy = y;
+        gbc.gridwidth = width;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JTextField field = new JTextField(15);
+        add(field, gbc);
+        return field;
+    }
+
+    public Purchaser getPurchaser() {
+        purchaser.setName(nameField.getText().trim());
+        purchaser.setPhone(phoneField.getText().trim());
+        purchaser.setPostalCode(postalCodeField.getText().trim());
+        purchaser.setProvince(provinceField.getText().trim());
+        purchaser.setCity(cityField.getText().trim());
+        purchaser.setDeliveryAddress(deliveryAddressField.getText().trim());
+        purchaser.setTodaysDate(todaysDateField.getText().trim());
+        purchaser.setCreditCardNo(creditCardNoField.getText().trim());
+        purchaser.setValidationId(validationIdField.getText().trim());
+        return purchaser;
+    }
+
+    public List<String> validateFields() {
+        List<String> errors = new ArrayList<>();
+
+        if (nameField.getText().trim().isEmpty()) {
+            errors.add("Name cannot be empty.");
+        }
+        if (phoneField.getText().trim().isEmpty()) {
+            errors.add("Phone cannot be empty.");
+        }
+        if (postalCodeField.getText().trim().isEmpty()) {
+            errors.add("Postal Code cannot be empty.");
+        }
+        if (provinceField.getText().trim().isEmpty()) {
+            errors.add("Province cannot be empty.");
+        }
+        if (cityField.getText().trim().isEmpty()) {
+            errors.add("City cannot be empty.");
+        }
+        if (deliveryAddressField.getText().trim().isEmpty()) {
+            errors.add("Delivery Address cannot be empty.");
+        }
+        if (todaysDateField.getText().trim().isEmpty()) {
+            errors.add("Today's Date cannot be empty.");
+        }
+        if (creditCardNoField.getText().trim().isEmpty()) {
+            errors.add("Credit Card Number cannot be empty.");
+        }
+        if (validationIdField.getText().trim().isEmpty()) {
+            errors.add("Validation ID cannot be empty.");
+        }
+
+        return errors;
     }
 
 }
